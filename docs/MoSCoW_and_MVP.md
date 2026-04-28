@@ -4,10 +4,11 @@
 
 1. Загрузка изображения через frontend.
 2. FastAPI endpoint `/predict/image`.
-3. AI pipeline: `bus` / `trolleybus` / `route_display` detection.
-4. Распознавание номера маршрута на crop'е табло.
-5. Отображение bbox и результата на frontend.
-6. Eval-set и сравнение baseline vs MVP по метрикам.
+3. YOLO №1: `bus` / `trolleybus` detection.
+4. YOLO №2: `route_display` detection внутри crop транспорта.
+5. OCR распознаёт номер маршрута на crop'е табло.
+6. Отображение bbox и результата на frontend.
+7. Eval-set и сравнение baseline vs MVP по метрикам.
 
 ## Should
 
@@ -36,7 +37,8 @@ MVP - минимальный набор функций для демо:
 
 1. Пользователь загружает изображение.
 2. Backend принимает изображение.
-3. AI pipeline находит транспорт и маршрутное табло.
-4. AI pipeline распознаёт номер маршрута.
-5. Frontend показывает тип транспорта, номер маршрута, confidence и bbox.
-6. В документации есть сравнение baseline и MVP по метрикам.
+3. YOLO №1 находит транспорт.
+4. YOLO №2 находит маршрутное табло внутри crop транспорта.
+5. OCR распознаёт номер маршрута.
+6. Frontend показывает тип транспорта, номер маршрута, confidence и bbox.
+7. В документации есть сравнение baseline и MVP по метрикам.
