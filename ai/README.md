@@ -1,30 +1,61 @@
 # ai
 
-Возможная структура (AI-generated):
+Идея папки: здесь лежит весь AI-слой проекта. Для учебного проекта структура сделана простой и читаемой: есть три явных версии `baseline`, `mvp`, `target`, и для каждой версии предусмотрен свой Python-пайплайн.
+
+Текущая структура:
 
 ```text
 ai/
   README.md
+  __init__.py
+  requirements.txt
+
+  service.py
+  versions.py
 
   models/
-    transport_detector.pt
-    route_display_detector.pt
+    baseline/
+      bus_detector.pt
+    mvp/
+    target/
 
-  pipeline/
-    transport_detector.py
-    route_display_detector.py
+  pipelines/
+    __init__.py
+    baseline.py
+    mvp.py
+    target.py
+
+  utils/
+    __init__.py
+    image.py
+    draw.py
     ocr.py
-    pipeline.py
 
   scripts/
-    train_transport.py
-    train_route_display.py
-    evaluate.py
+    __init__.py
+    predict_image.py
 ```
 
-Идея папки: здесь лежит весь код, связанный с компьютерным зрением и ML. Backend должен только вызывать готовый pipeline, а не знать детали обучения, OCR и метрик.
+Ключевые идеи:
 
-Разметка датасета:
+- `service.py` является точкой входа в AI-компонент.
+- `versions.py` хранит список доступных версий для интерфейса и backend.
+- `pipelines/` содержит три явных пайплайна: `baseline`, `mvp`, `target`.
+- `models/` хранит веса по версиям.
+- `utils/` содержит небольшие вспомогательные функции для изображений, отрисовки и OCR.
+- `scripts/` нужны для локального запуска.
+
+Минимальный AI-поток:
+
+```text
+1. Получить изображение.
+2. По model_id выбрать один из трех пайплайнов.
+3. Запустить соответствующую Python-функцию.
+4. Выполнить inference.
+5. Вернуть тип транспорта, номер маршрута, bbox и confidence.
+```
+
+Разметка датасета для обучения:
 
 ```text
 Один датасет в формате YOLO
@@ -35,38 +66,6 @@ ai/
 2 - route_display
 ```
 
-Минимальный ML-пайплайн:
-
-```text
-1. Получить изображение.
-2. YOLO №1 находит на изображении:
-   - bus
-   - trolleybus
-3. Для каждого найденного транспорта сделать crop.
-4. YOLO №2 ищет внутри crop:
-   - route_display
-5. Вырезать crop номера с небольшим padding.
-6. Распознать номер маршрута через OCR.
-7. Вернуть список результатов:
-   - тип транспорта
-   - номер маршрута
-   - bounding boxes
-   - confidence
-```
-
-Baseline:
-
-```text
-Предобученная YOLO-модель без дообучения ищет bus и возвращает bbox транспорта без распознавания номера маршрута.
-```
-
-MVP:
-
-```text
-YOLO №1 ищет bus / trolleybus.
-YOLO №2 ищет route_display внутри crop транспорта.
-OCR читает номер маршрута по crop'у табло.
-```
 
 Основные метрики:
 
@@ -89,4 +88,12 @@ OCR:
 Вся система:
 - End-to-end accuracy
 - Latency
+```
+
+Runtime-версии:
+
+```text
+baseline - готовая YOLO-модель для детекции автобусов
+mvp      - полный пайплайн transport -> route_display -> OCR
+target   - улучшенная версия полного пайплайна для экспериментов
 ```
