@@ -8,12 +8,12 @@ from ai.pipelines.baseline import run_baseline
 from ai.pipelines.mvp import run_mvp
 from ai.pipelines.target import run_target
 from ai.utils.image import load_image_from_bytes
-from ai.versions import MODELS
+from ai.versions import get_enabled_models
 
 
 def list_models() -> list[dict[str, str]]:
     """Return runtime versions available for selection."""
-    return MODELS
+    return get_enabled_models()
 
 
 def predict_image(image_bytes: bytes, model_id: str) -> dict[str, object]:

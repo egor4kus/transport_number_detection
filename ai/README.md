@@ -55,6 +55,31 @@ ai/
 5. Вернуть тип транспорта, номер маршрута, bbox и confidence.
 ```
 
+Формат ответа:
+
+```json
+{
+  "model_id": "baseline",
+  "image": {
+    "width": 3024,
+    "height": 4032
+  },
+  "transports": [
+    {
+      "type": "bus",
+      "confidence": 0.71,
+      "bbox": {
+        "x1": 1050.0,
+        "y1": 1612.4,
+        "x2": 1588.2,
+        "y2": 2178.6
+      },
+      "route_displays": []
+    }
+  ]
+}
+```
+
 Разметка датасета для обучения:
 
 ```text
@@ -96,4 +121,18 @@ Runtime-версии:
 baseline - готовая YOLO-модель для детекции автобусов
 mvp      - полный пайплайн transport -> route_display -> OCR
 target   - улучшенная версия полного пайплайна для экспериментов
+```
+
+Сейчас реализован только `baseline`, поэтому в `GET /models` и в локальном `--list-models` должна показываться только эта версия. `mvp` и `target` остаются в коде как следующие шаги, но ещё не должны предлагаться пользователю.
+
+Как работает baseline:
+
+```text
+1. Backend или локальный скрипт передает изображение в ai/service.py.
+2. service.py загружает изображение и исправляет EXIF-ориентацию.
+3. По model_id="baseline" вызывается pipelines/baseline.py.
+4. Baseline загружает готовые YOLO-веса из ai/models/baseline/bus_detector.pt.
+5. YOLO запускается с фильтром classes=[5], то есть ищет только class "bus".
+6. На выходе формируется JSON с image.width, image.height и списком transports.
+7. Локальный скрипт дополнительно сохраняет картинку с рамками в ai/outputs/.
 ```
