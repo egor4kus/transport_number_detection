@@ -45,7 +45,7 @@ function loadImageFromFile(file) {
     });
 }
 
-function drawBoxWithLabel(ctx, bbox, text, color, imageHeight, lineWidth) {
+function drawBoxWithLabel(ctx, bbox, text, color, imageWidth, imageHeight, lineWidth, fontSize) {
     const x1 = Number(bbox.x1);
     const y1 = Number(bbox.y1);
     const x2 = Number(bbox.x2);
@@ -59,21 +59,27 @@ function drawBoxWithLabel(ctx, bbox, text, color, imageHeight, lineWidth) {
 
     const textMetrics = ctx.measureText(text);
     const textWidth = Math.ceil(textMetrics.width);
-    const textHeight = Math.ceil(
-        textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent,
-    );
+    const textHeight = fontSize;
     const backgroundWidth = textWidth + (2 * TEXT_PADDING_X);
     const backgroundHeight = textHeight + (2 * TEXT_PADDING_Y);
+    const labelX = Math.min(
+        Math.max(0, x1),
+        Math.max(0, imageWidth - backgroundWidth),
+    );
 
-    let labelY = Math.max(0, y1 - backgroundHeight - TEXT_MARGIN);
-    if (labelY === 0) {
+    let labelY = y1 - backgroundHeight - TEXT_MARGIN;
+    if (labelY < 0) {
         labelY = Math.min(imageHeight - backgroundHeight, y1 + TEXT_MARGIN);
     }
 
     ctx.fillStyle = color;
-    ctx.fillRect(x1, labelY, backgroundWidth, backgroundHeight);
+    ctx.fillRect(labelX, labelY, backgroundWidth, backgroundHeight);
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(text, x1 + TEXT_PADDING_X, labelY + TEXT_PADDING_Y);
+    ctx.fillText(
+        text,
+        labelX + TEXT_PADDING_X,
+        labelY + (backgroundHeight / 2),
+    );
 }
 
 export async function drawAnnotatedResult({ canvas, file, result }) {
@@ -96,7 +102,7 @@ export async function drawAnnotatedResult({ canvas, file, result }) {
     const fontSize = resolveFontSize(imageWidth, imageHeight);
 
     context.font = `700 ${fontSize}px "Avenir Next", "Segoe UI", sans-serif`;
-    context.textBaseline = "top";
+    context.textBaseline = "middle";
 
     for (const transport of result.transports || []) {
         const transportLabel = `${transport.type} ${Number(transport.confidence).toFixed(2)}`;
@@ -106,8 +112,10 @@ export async function drawAnnotatedResult({ canvas, file, result }) {
             transport.bbox,
             transportLabel,
             TRANSPORT_COLOR,
+            imageWidth,
             imageHeight,
             lineWidth,
+            fontSize,
         );
 
         for (const routeDisplay of transport.route_displays || []) {
@@ -122,8 +130,10 @@ export async function drawAnnotatedResult({ canvas, file, result }) {
                 routeDisplay.bbox,
                 routeLabel,
                 ROUTE_DISPLAY_COLOR,
+                imageWidth,
                 imageHeight,
                 lineWidth,
+                fontSize,
             );
         }
     }
