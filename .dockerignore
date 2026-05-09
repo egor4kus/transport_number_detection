@@ -1,0 +1,13 @@
+.git
+.gitignore
+.DS_Store
+.venv
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+ai/outputs/
+ai/tmp/
+
+frontend/README.md
+backend/README.md

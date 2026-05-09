@@ -1,4 +1,5 @@
 const DEFAULT_BACKEND_PORT = "8000";
+const LOCAL_DEV_FRONTEND_PORTS = new Set(["3000"]);
 
 function resolveApiBaseUrl() {
     const metaBaseUrl = document
@@ -9,10 +10,17 @@ function resolveApiBaseUrl() {
         return metaBaseUrl.replace(/\/+$/, "");
     }
 
-    const { protocol, hostname } = window.location;
+    const { protocol, hostname, port } = window.location;
+    const isLocalHost = ["127.0.0.1", "localhost", "::1"].includes(hostname);
+    const isLocalDevFrontend =
+        isLocalHost && LOCAL_DEV_FRONTEND_PORTS.has(port || "");
+
+    if ((protocol === "http:" || protocol === "https:") && isLocalDevFrontend) {
+        return `${protocol}//${hostname || "127.0.0.1"}:${DEFAULT_BACKEND_PORT}`;
+    }
 
     if (protocol === "http:" || protocol === "https:") {
-        return `${protocol}//${hostname || "127.0.0.1"}:${DEFAULT_BACKEND_PORT}`;
+        return "";
     }
 
     return `http://127.0.0.1:${DEFAULT_BACKEND_PORT}`;
