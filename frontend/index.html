@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="api-base-url" content="" />
+    <title>Transport Number Detection</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <p class="eyebrow">Transport Number Detection</p>
+        <h1>Демо распознавания транспорта</h1>
+        <p class="subtitle">
+          Загрузите фото, выберите модель и получите изображение с рамками и
+          подписями.
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel controls-panel">
+          <h2>Запуск</h2>
+          <form id="predict-form" class="controls">
+            <label class="field">
+              <span>Изображение</span>
+              <input
+                id="image-input"
+                name="image"
+                type="file"
+                accept="image/*"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Модель</span>
+              <select id="model-select" name="model_id" required disabled>
+                <option>Загрузка моделей...</option>
+              </select>
+            </label>
+
+            <p id="model-description" class="hint">
+              Фронтенд запрашивает список моделей у backend.
+            </p>
+
+            <button id="submit-button" type="submit">Запустить распознавание</button>
+          </form>
+
+          <div id="status-banner" class="status-banner" aria-live="polite"></div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <h2>Результат</h2>
+            <p id="result-meta" class="hint">Пока нет результата.</p>
+          </div>
+
+          <div id="canvas-shell" class="canvas-shell is-empty">
+            <canvas id="result-canvas"></canvas>
+          </div>
+        </section>
+
+        <section class="panel detections-panel">
+          <div class="panel-heading">
+            <h2>Найденные объекты</h2>
+            <p class="hint">Список строится из ответа backend.</p>
+          </div>
+
+          <ul id="detections-list" class="detections-list">
+            <li class="empty-state">Пока объектов нет.</li>
+          </ul>
+        </section>
+
+        <section class="panel json-panel">
+          <div class="panel-heading">
+            <h2>Raw JSON</h2>
+            <p class="hint">Полезно для отладки и проверки формата ответа.</p>
+          </div>
+
+          <pre id="json-output" class="json-output">Пока нет ответа.</pre>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

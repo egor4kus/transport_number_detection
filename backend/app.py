@@ -1,11 +1,20 @@
 """Minimal FastAPI backend for transport number detection."""
 
 from __future__ import annotations
+
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
 from ai.service import list_models, predict_image
 
 
 app = FastAPI(title="Transport Number Detection API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
